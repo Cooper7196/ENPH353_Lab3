@@ -63,7 +63,38 @@
     </link>
 
     <!--TODO Adding wheels links - add "right_wheel_link" and "left_wheel_link" here-->
-    
+    <link name="right_wheel_link">
+        <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" l="${wheel_length}" o_xyz="0 0 0" o_rpy="1.5708 0 0" />
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+            </geometry>
+        </collision>
+    </link>
+    <link name="left_wheel_link">
+        <xacro:cylinder_inertia m="0.5" r="${wheel_radius}" l="${wheel_length}" o_xyz="0 0 0" o_rpy="1.5708 0 0" />
+        <visual>
+            <origin xyz="0 0 0" rpy="1.5708 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="1.5708 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+            </geometry>
+        </collision>
+    </link>
     <!-- End Adding wheels links -->
 
     <link name="caster_wheel_link">
@@ -94,7 +125,20 @@
     </joint>
 
     <!-- TODO Adding wheels joints - add a joint to the base_link for each wheel-->
-    
+    <joint name="right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel_link"/>
+        <origin xyz="${-base_length / 3.0} ${-(base_width / 2.0 + wheel_length / 2.0)} 0"
+                rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>        
+    </joint>
+    <joint name="left_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="left_wheel_link"/>
+        <origin xyz="${-base_length / 3.0} ${(base_width / 2.0 + wheel_length / 2.0)} 0"
+                rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
     <!-- End Adding wheels joints -->
 
     <joint name="base_caster_wheel_joint" type="fixed">
@@ -123,6 +167,16 @@
             
             <use_pose_vector_msg>false</use_pose_vector_msg>
                 
+        </plugin>
+        <plugin
+            filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
+            <wheel_separation>${base_width + wheel_length}</wheel_separation>
+            <wheel_radius>${wheel_radius}</wheel_radius>
+            <odom_publish_frequency>1</odom_publish_frequency>
+            <topic>cmd_vel</topic>
         </plugin>
     </gazebo>
 
